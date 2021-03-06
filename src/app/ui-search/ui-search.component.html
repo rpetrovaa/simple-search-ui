@@ -2,7 +2,7 @@
 
 <!-- <h1 style="margin-left: 50px">Search GUIs</h1> -->
 
-<div *ngIf="mode_searchUI">
+<div>
   <div *ngIf="searchForm">
     <form [formGroup]="searchForm" novalidate>
       <mat-form-field
@@ -56,5 +56,3 @@
     </mat-grid-tile>
   </mat-grid-list>
 </div>
-
-<app-chatbot *ngIf="mode_chatbot"></app-chatbot>
