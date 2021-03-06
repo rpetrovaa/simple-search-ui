@@ -67,6 +67,7 @@ export class UISearchComponent implements OnInit {
   counter: number;
   nextResults: any;
   indexNext: number = 0;
+  moreOptions: boolean = false;
 
   constructor(
     private store: Store,
@@ -241,6 +242,15 @@ export class UISearchComponent implements OnInit {
     });
     this.resultsMeta = [];
     this.resultsImages = [];
+    this.moreOptions = true;
+  }
+
+  showMoreScreens() {
+    this.computeNextScreensResults(
+      this.postRequest,
+      this.counter,
+      RequestType[RequestType.INITIAL]
+    );
   }
 
   computeNegativeResults(negRequest: PostRequest, counter: number) {
@@ -314,7 +324,13 @@ export class UISearchComponent implements OnInit {
   ) {
     this.nextResults = [];
 
-    console.log('LAST RES', this.lastResults);
+    this.lastQuery$.subscribe((results) => {
+      this.lastResults = results;
+
+      console.log('what is state?', this.stateExt);
+
+      console.log('LAST RES', this.lastResults);
+    });
 
     this.nextResults = this.getNextTopResults(this.lastResults[1].result);
 

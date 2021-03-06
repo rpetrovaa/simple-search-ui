@@ -24,6 +24,15 @@
       >
         Search
       </button>
+      <button
+        mat-raised-button
+        color="grey"
+        style="margin-left: 10px; height: 1cm"
+        [disabled]="moreOptions ? false : true"
+        (click)="showMoreScreens()"
+      >
+        More Screens
+      </button>
     </form>
   </div>
 </div>
