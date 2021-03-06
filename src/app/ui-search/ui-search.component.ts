@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Gui2wireApiService } from '../services/gui2wire-api.service';
 import { PostRequest, PostResult } from '../classes/post';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validator, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
 import {
@@ -38,7 +38,7 @@ export class UISearchComponent implements OnInit {
     query: '',
     method: 'bm25okapi',
     qe_method: '',
-    max_results: 8,
+    max_results: 1000,
   };
 
   results: any;
@@ -203,6 +203,7 @@ export class UISearchComponent implements OnInit {
   }
 
   sendRequest() {
+    if (!this.searchForm.get('value').value) return;
     this.postRequest.query = this.searchForm.get('value').value;
 
     this.store.dispatch(
@@ -221,7 +222,11 @@ export class UISearchComponent implements OnInit {
       const primary = [];
 
       results.forEach((result) => {
-        result.result.forEach((element) => {
+        console.log('iteration results');
+        if (!result) return;
+        const top = this.getTopResults(result.result);
+        console.log('TOP', top);
+        top.forEach((element) => {
           const index = element.index;
           const url = '/ui/' + index + '.jpg';
           primary.push(element);

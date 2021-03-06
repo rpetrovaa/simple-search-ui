@@ -12,8 +12,6 @@ import {
 import { QueryResult, RequestType } from '../model/query.model';
 import { Gui2wireApiService } from '../services/gui2wire-api.service';
 import { tap, take } from 'rxjs/operators';
-import { dispatch } from 'rxjs/internal/observable/pairs';
-import { PostRequest } from '../classes/post';
 import { DiffService } from '../services/diff.service';
 
 export class QueryStateModel {
@@ -260,27 +258,4 @@ export class QueryState {
       // counter: (state.counter += 1),
     });
   }
-
-  // @Action(AddInitialRequestType)
-  // addInitialRequest({getState, setState}: StateContext<QueryStateModel>) {
-  //     const state = getState();
-  //     setState({
-  //         ...state,
-  //         queries:
-  //     });
-  // }
-
-  // @Action(SetRequestType)
-  // setRequestType({getState, setState}: StateContext<QueryStateModel>, { payload }: SetRequestType) {
-  //     const state = getState();
-
-  //     const current = {
-  //         coffeeList: payload.requestType
-  //     };
-
-  //     setState({
-  //         ...state,
-  //         payload.requestType
-  //     });
-  // }
 }
