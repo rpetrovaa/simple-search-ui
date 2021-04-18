@@ -104,7 +104,6 @@ export class UISearchComponent implements OnInit {
     this.resultsMeta = [];
     this.resultsImages = [];
     this.moreOptions = true;
-    this.indexNext = 0;
   }
 
   showMoreScreens() {
@@ -129,7 +128,7 @@ export class UISearchComponent implements OnInit {
     });
 
     this.nextResults = this.getNextTopResults(this.lastResults[1].result);
-    console.log('NEXT RES: ', this.nextResults);
+    // console.log('NEXT RES: ', this.nextResults);
 
     if (!this.nextResults) return;
     // console.log('next res', this.nextResults);
@@ -199,7 +198,7 @@ export class UISearchComponent implements OnInit {
   getTopResults(metaResults: any[]) {
     if (!metaResults) return;
     let top = [];
-    for (let i = 0; i < this.indexNext + 20; i++) {
+    for (let i = 0; i < 20; i++) {
       top.push(metaResults[i]);
     }
     return top;
@@ -209,7 +208,7 @@ export class UISearchComponent implements OnInit {
     if (!metaResults) return;
     console.log('NEXT INDEX', this.indexNext);
     let top = [];
-    for (let i = 0; i < this.indexNext + 40; i++) {
+    for (let i = this.indexNext + 20; i < this.indexNext + 40; i++) {
       //console.log('i: ', i);
       top.push(metaResults[i]);
     }
