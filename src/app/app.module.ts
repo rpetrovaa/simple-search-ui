@@ -25,7 +25,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PostRequestService } from './services/post-request.service';
 import { ImageDialogComponent } from './image-dialog/image-dialog.component';
 import { UISearchComponent } from './ui-search/ui-search.component';
-import { InstructionsComponent } from './instructions/instructions.component';
 import { NavBarComponent } from './shared/nav-bar/nav-bar.component';
 
 @NgModule({
@@ -53,7 +52,6 @@ import { NavBarComponent } from './shared/nav-bar/nav-bar.component';
     AppComponent,
     ImageDialogComponent,
     UISearchComponent,
-    InstructionsComponent,
     NavBarComponent,
   ],
   providers: [Gui2wireApiService, PostRequestService],
