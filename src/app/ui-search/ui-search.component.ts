@@ -8,7 +8,6 @@ import { QueryState } from '../state/query.state';
 import { Observable } from 'rxjs';
 import { Select, Store } from '@ngxs/store';
 import { RequestType } from '../model/query.model';
-import { API } from '../model/api';
 
 @Component({
   selector: 'app-ui-search',
@@ -16,10 +15,8 @@ import { API } from '../model/api';
   styleUrls: ['./ui-search.component.css'],
 })
 export class UISearchComponent implements OnInit {
-  @Select(QueryState.getQueryResults) queryResults$: Observable<any[]>;
-  @Select(QueryState.getLastQuery) lastQuery$: Observable<any[]>;
-
-  api = API;
+  @Select(QueryState.getQueryResults) queryResults$: Observable<any[]>; // observable that subscribes to the results of a search request that is forwarded by the state management to the backend
+  @Select(QueryState.getLastQuery) lastQuery$: Observable<any[]>; // observable that returns the latest 'query' or search request for UI screens
 
   postRequest: PostRequest = {
     query: '',
@@ -28,29 +25,10 @@ export class UISearchComponent implements OnInit {
     max_results: 1000,
   };
 
-  results: any;
-  resultsMeta: any;
-  resultsImages: any;
-  isImageLoading: boolean;
-  imageToShow: string | ArrayBuffer;
+  resultsMeta: any[]; // array containing the combined metadata of results and images for displaying
+  resultsImages: any[]; // array containing the metadata of the images in the returned results from backend
+  lastResults: any[]; // array holding the laste results from backend
   searchForm: FormGroup;
-
-  request: PostRequest;
-  requestNegative: PostRequest;
-  requestExtended: PostRequest;
-
-  resultsNegative: any;
-  resultsDiff: PostResult[];
-
-  resultsExtended: any;
-  resultsIntersect: PostResult[];
-
-  snapshot;
-  lastResults: any;
-
-  state: string;
-  stateExt: string;
-
   counter: number;
   nextResults: any;
   indexNext: number = 0;
@@ -64,10 +42,12 @@ export class UISearchComponent implements OnInit {
     });
   }
 
+  // on clicking 'Seach' button the new request is added to the state log and the returned results from backend are prepared for rendeting
   sendRequest() {
     if (!this.searchForm.get('value').value) return;
     this.postRequest.query = this.searchForm.get('value').value;
 
+    // dispatch an action of type 'AddQuery' to add latest request to the state management
     this.store.dispatch(
       new AddQuery({
         query: this.postRequest.query,
@@ -76,6 +56,7 @@ export class UISearchComponent implements OnInit {
         counter: this.counter,
       })
     );
+    // subscribe to the query results; the form of 'results' is defined by interface 'QueryResult'
     this.queryResults$.subscribe((results) => {
       if (!results) return;
 
@@ -83,11 +64,11 @@ export class UISearchComponent implements OnInit {
       this.resultsImages = [];
       const primary = [];
 
+      // interface QueryResult has a key 'result' that contains the metadata of all returned ranking results
       results.forEach((result) => {
-        console.log('iteration results');
         if (!result) return;
+        // getting top results (20 or more based on having requested the 'more screens' option) and configuring the image data for fronted rendering
         const top = this.getTopResults(result.result);
-        console.log('TOP', top);
         top.forEach((element) => {
           const index = element.index;
           const url = '/ui/' + index + '.jpg';
@@ -97,23 +78,28 @@ export class UISearchComponent implements OnInit {
       });
 
       if (!this.resultsMeta && !primary && !this.resultsImages) return;
+      // prepare the combined array of ranking metadata and image metadata for frontend rendering
       this.resultsMeta = this.combineArrays(primary, this.resultsImages);
-
+      // after each query request is sent reset the search request input
       this.searchForm.reset();
     });
+    // reset all configs after each request
     this.resultsMeta = [];
     this.resultsImages = [];
     this.moreOptions = true;
+    this.indexNext = 0;
   }
 
+  // dispatch action for state management and call method 'computeNextScreensResults()' on clicking 'More Screens' button
   showMoreScreens() {
     this.computeNextScreensResults(
       this.postRequest,
       this.counter,
-      RequestType[RequestType.INITIAL]
+      RequestType[RequestType.ADDITIVE]
     );
   }
 
+  // computes next top results and displays results in browser
   computeNextScreensResults(
     extRequest: PostRequest,
     counter: number,
@@ -123,16 +109,12 @@ export class UISearchComponent implements OnInit {
 
     this.lastQuery$.subscribe((results) => {
       this.lastResults = results;
-      // console.log('what is state?', this.stateExt);
-      // console.log('LAST RES', this.lastResults);
     });
 
     this.nextResults = this.getNextTopResults(this.lastResults[1].result);
-    // console.log('NEXT RES: ', this.nextResults);
-
     if (!this.nextResults) return;
-    // console.log('next res', this.nextResults);
 
+    // dispatch an action of type 'AddNextScreens'
     this.store.dispatch(
       new AddNextScreens(
         {
@@ -148,23 +130,17 @@ export class UISearchComponent implements OnInit {
     this.renderChatbotResultsFromMetaData(this.nextResults);
   }
 
+  // method that prepares the top ranked results in array 'this.resultsMeta' to be displayed in the browser
   renderChatbotResultsFromMetaData(results: any) {
     if (!results) return;
-
-    let query_results = results;
-
-    //console.log('RESULTS', results);
-
     this.resultsMeta = [];
     this.resultsImages = [];
     const primary = [];
 
     const top = this.getTopResults(results);
-    console.log('TOP', top);
 
     if (!top) return;
     top.forEach((result) => {
-      // console.log('iterating in TOP', result);
       if (!result) return;
       const index = result.index;
       const url = '/ui/' + index + '.jpg';
@@ -173,9 +149,9 @@ export class UISearchComponent implements OnInit {
     });
     if (!this.resultsMeta && !primary && !this.resultsImages) return;
     this.resultsMeta = this.combineArrays(primary, this.resultsImages);
-    //console.log('this.resultsMeta', this.resultsMeta);
   }
 
+  // method to combine the ranking metadata with the image meta for displaying in the browser
   combineArrays(a1, a2) {
     a1 = a1.map((value, index) => ({
       resultMeta: value,
@@ -194,22 +170,26 @@ export class UISearchComponent implements OnInit {
     });
   }
 
-  //get top 20 results
+  // get top 20 results
   getTopResults(metaResults: any[]) {
     if (!metaResults) return;
+    if (this.indexNext === undefined) {
+      console.log('in if statement');
+      return;
+    }
     let top = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < this.indexNext + 20; i++) {
       top.push(metaResults[i]);
     }
     return top;
   }
 
+  // method that gets the next top 20 results based on the current 'indexNext'
   getNextTopResults(metaResults: any[]) {
     if (!metaResults) return;
-    console.log('NEXT INDEX', this.indexNext);
     let top = [];
-    for (let i = this.indexNext + 20; i < this.indexNext + 40; i++) {
-      //console.log('i: ', i);
+    // start from 0 in order to display also the previous results
+    for (let i = 0; i < this.indexNext + 40; i++) {
       top.push(metaResults[i]);
     }
     this.indexNext = this.indexNext + 20;

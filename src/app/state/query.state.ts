@@ -5,16 +5,15 @@ import { QueryResult, RequestType } from '../model/query.model';
 import { Gui2wireApiService } from '../services/gui2wire-api.service';
 import { tap, take } from 'rxjs/operators';
 
+// Class for managing the state of the application. Requests are forwarded to the backend from this class. Each request and its results are recorded by the state management.
 export class QueryStateModel {
   queries: QueryResult[];
-  // counter: number;
 }
 
 @State<QueryStateModel>({
   name: 'queries',
   defaults: {
     queries: [],
-    // counter: 0,
   },
 })
 @Injectable()
@@ -23,7 +22,6 @@ export class QueryState {
 
   @Selector()
   static getQueryResults(state: QueryStateModel) {
-    //return [...state.queries];
     const current = state.queries[state.queries.length - 1];
     if (!current) return;
     return [current];
@@ -31,33 +29,24 @@ export class QueryState {
 
   @Selector()
   static getLastQuery(state: QueryStateModel) {
-    //return [...state.queries];
     const current = state.queries[state.queries.length - 1];
     const prev = state.queries[state.queries.length - 2];
-    // if (!current) return;
-    // if (!prev) return;
-    console.log('previous query', prev);
-    console.log('current query', current);
     return [prev, current];
   }
 
+  // action dispatched on making initial requests for UI screens
   @Action(AddQuery)
   add(
     { getState, setState }: StateContext<QueryStateModel>,
     { payload }: AddQuery
   ) {
     const state = getState();
-    console.log('PAYLOAD');
-    console.log(payload.requestType);
+    // make request to backend using '/api' proxy
     return this.queryService.post('/api', payload.postRequest).pipe(
       take(1),
       tap((result) => {
         if (!result) return;
         console.log('result in additive', result);
-        // let type = RequestType.ADDITIVE;
-        // if (state.counter == 0) {
-        //   type = RequestType.INITIAL;
-        // }
         setState({
           queries: [
             ...state.queries,
@@ -71,25 +60,18 @@ export class QueryState {
               result: result.results,
             },
           ],
-          // counter: (state.counter += 1),
         });
       })
     );
   }
 
+  // action dispatched on requesting more screens
   @Action(AddNextScreens)
   AddNextScreens(
     { getState, setState }: StateContext<QueryStateModel>,
     { query, result }: AddNextScreens
   ) {
-    console.log('Result in after intersect', result);
     const state = getState();
-    // let type = RequestType.ADDITIVE;
-    console.log('STATEEE: ', state);
-    console.log(
-      'STATEEE Counter: ',
-      state.queries[state.queries.length - 1].query.counter
-    );
     return setState({
       queries: [
         ...state.queries,
@@ -104,7 +86,6 @@ export class QueryState {
           result: result,
         },
       ],
-      // counter: (state.counter += 1),
     });
   }
 }
