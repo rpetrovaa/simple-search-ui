@@ -15,8 +15,8 @@ import { RequestType } from '../model/query.model';
   styleUrls: ['./ui-search.component.css'],
 })
 export class UISearchComponent implements OnInit {
-  @Select(QueryState.getQueryResults) queryResults$: Observable<any[]>; // observable that subscribes to the results of a search request that is forwarded by the state management to the backend
-  @Select(QueryState.getLastQuery) lastQuery$: Observable<any[]>; // observable that returns the latest 'query' or search request for UI screens
+  @Select(QueryState.getQueryResults) queryResults$: Observable<any[]>; // Select - observable that subscribes to the results of a search request that is forwarded by the state management to the backend
+  @Select(QueryState.getLastQuery) lastQuery$: Observable<any[]>; // Select - observable that returns the latest 'query' or search request for UI screens
 
   postRequest: PostRequest = {
     query: '',
