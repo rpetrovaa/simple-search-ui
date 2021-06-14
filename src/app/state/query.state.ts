@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { AddQuery, AddNextScreens } from '../actions/query.actions';
-import { QueryResult, RequestType } from '../model/query.model';
+import { QueryResult } from '../model/query.model';
 import { Gui2wireApiService } from '../services/gui2wire-api.service';
 import { tap, take } from 'rxjs/operators';
 
@@ -46,7 +46,6 @@ export class QueryState {
       take(1),
       tap((result) => {
         if (!result) return;
-        console.log('result in additive', result);
         setState({
           queries: [
             ...state.queries,

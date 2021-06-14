@@ -95,7 +95,7 @@ export class UISearchComponent implements OnInit {
     this.computeNextScreensResults(
       this.postRequest,
       this.counter,
-      RequestType[RequestType.ADDITIVE]
+      RequestType[RequestType.INITIAL]
     );
   }
 

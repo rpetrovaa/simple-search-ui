@@ -20,6 +20,4 @@ export interface QueryResult {
 
 export enum RequestType {
   INITIAL,
-  ADDITIVE,
-  NEGATIVE,
 }
