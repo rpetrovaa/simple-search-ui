@@ -1,26 +1,14 @@
-# StateManagement
+# Simple Search UI
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.2.0.
+This is the code for the search-engine-based approach, Simple Search UI.
 
-## Development server
+The tool has NGXS State Management for logging purposes: Each search requests is logged as type INITIAL. There is no connection (implicit feedback) between requests.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+The proxy to the GUI Retrieval and Ranking API is specified in ./proxy.config.json.
 
-## Code scaffolding
+To run the project locally, execute the command `ng serve` in the project location in a terminal. The local frontend server will be reachable on `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+You can type search requests in the search input mask and requests more screens via the button option.
 
 ## Further help
 
